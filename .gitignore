@@ -1,0 +1,38 @@
+# Carpetas de compilación
+build/
+
+# Archivos generados por Qt Creator o IDEs
+*.user
+*.pro.user
+*.qbs.user
+*.autosave
+
+# Archivos de backup y temporales
+*~
+*.swp
+*.tmp
+*.bak
+
+# Archivos compilados / binarios
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+
+# Archivos generados por Qt (MOC, UI, RCC)
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+
+# Archivos CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos de logs o temporales de CMake
+Testing/
+CTestTestfile.cmake
