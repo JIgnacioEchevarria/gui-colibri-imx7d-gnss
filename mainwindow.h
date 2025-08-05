@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QSerialPort>
-#include <QSqlTableModel>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QNetworkAccessManager>

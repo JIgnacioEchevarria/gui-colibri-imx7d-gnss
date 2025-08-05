@@ -1,10 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QSqlDatabase>
-#include <QSqlError>
-#include <QSqlQuery>
-#include <QSqlTableModel>
-#include <QSqlRecord>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QDateTime>
@@ -123,7 +118,7 @@ void MainWindow::updateUi(const GNGGAData& data)
     ui->altitudeInput->setText(QString::number(data.altitude, 'f', 6));
 }
 
-double convertNmeaToDecimal(const QString& nmeaCoord, const QString& direction) {
+double MainWindow::convertNmeaToDecimal(const QString& nmeaCoord, const QString& direction) {
     if (nmeaCoord.isEmpty() || direction.isEmpty()) return 0.0;
 
     bool ok = false;
