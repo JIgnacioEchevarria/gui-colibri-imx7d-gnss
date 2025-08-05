@@ -98,7 +98,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="satelitesInput"/>
+         <widget class="QLineEdit" name="satellitesInput"/>
         </item>
        </layout>
       </item>

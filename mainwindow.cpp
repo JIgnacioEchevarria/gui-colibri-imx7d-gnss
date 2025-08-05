@@ -119,7 +119,7 @@ void MainWindow::updateUi(const GNGGAData& data)
 {
     ui->latitudeInput->setText(QString::number(data.latitude, 'f', 6));
     ui->longitudeInput->setText(QString::number(data.longitude, 'f', 6));
-    ui->satelitesInput->setText(QString::number(data.satellites, 'f', 6));
+    ui->satellitesInput->setText(QString::number(data.satelllites, 'f', 6));
     ui->altitudeInput->setText(QString::number(data.altitude, 'f', 6));
 }
 
@@ -173,10 +173,10 @@ void MainWindow::sendDataToServer(const GNGGAData& data)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QString jsonString = QString(
-                             R"({
+        R"({
             "latitude": "%1",
             "longitude": "%2",
-            "satelites": "%3",
+            "satellites": "%3",
             "altitude": "%4"
         })")
         .arg(data.latitude)
