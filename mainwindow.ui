@@ -14,48 +14,178 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(37, 102, 255);
-background-color: rgb(116, 54, 127);</string>
+   <string notr="true">background-color: rgb(0, 0, 167);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>18</pointsize>
-        <bold>true</bold>
-       </font>
+    <item row="1" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>147</width>
+        <height>20</height>
+       </size>
       </property>
-      <property name="text">
-       <string>GNSS</string>
-      </property>
-     </widget>
+     </spacer>
     </item>
-    <item row="0" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+    <item row="3" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="getGnssDataBtn">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="text">
+           <string>Latitud</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="latitudeInput"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="text">
+           <string>Longitud</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="longitudeInput"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="text">
+           <string>Satélites</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="satelitesInput"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="text">
+           <string>Altitud</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="altitudeInput"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="3">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>147</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>206</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="2">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>205</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label">
         <property name="font">
          <font>
-          <pointsize>11</pointsize>
+          <pointsize>18</pointsize>
           <bold>true</bold>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(79, 255, 100);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);</string>
         </property>
         <property name="text">
-         <string>Consultar</string>
+         <string>GNSS</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="clearGnssDataBtn">
+       <widget class="QPushButton" name="refreshDataBtn">
         <property name="font">
          <font>
           <pointsize>11</pointsize>
@@ -63,22 +193,14 @@ color: rgb(0, 0, 0);</string>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(0, 0, 0);
-background-color: rgb(255, 36, 16);</string>
+         <string notr="true">background-color: rgb(0, 180, 0);</string>
         </property>
         <property name="text">
-         <string>Vaciar</string>
+         <string>Refrescar</string>
         </property>
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QTableView" name="gnssDataTable">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>
@@ -88,7 +210,7 @@ background-color: rgb(255, 36, 16);</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

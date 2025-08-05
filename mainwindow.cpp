@@ -23,11 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     networkManager = new QNetworkAccessManager(this);
 
     initializeUartb();
-    initializeDb();
     initializeTcpServer();
 
-    connect(ui->getGnssDataBtn, &QPushButton::clicked, this, &MainWindow::getGnssData);
-    connect(ui->clearGnssDataBtn, &QPushButton::clicked, this, &MainWindow::clearGnssTable);
+    connect(ui->refreshDataBtn, &QPushButton::clicked, this, &MainWindow::getGNGGAData);
 }
 
 MainWindow::~MainWindow()
@@ -39,40 +37,6 @@ MainWindow::~MainWindow()
     }
 
     delete ui;
-}
-
-void MainWindow::initializeDb()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("gnss.db");
-
-    if (!db.open()) {
-        qDebug() << "Error al abrir la base de datos:" << db.lastError().text();
-        return;
-    } else {
-        qDebug() << "Base de datos abierta correctamente.";
-
-        // Crear tabla si no existe
-        QSqlQuery query;
-        if (!query.exec("CREATE TABLE IF NOT EXISTS gnss_data ("
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        "date TEXT, "
-                        "time TEXT, "
-                        "raw_line TEXT)")) {
-            qDebug() << "Error creando tabla:" << query.lastError().text();
-        }
-
-        modelGnssData = new QSqlTableModel(this);
-        modelGnssData->setTable("gnss_data");
-        modelGnssData->select();
-
-        modelGnssData->setHeaderData(modelGnssData->record().indexOf("date"), Qt::Horizontal, tr("Fecha"));
-        modelGnssData->setHeaderData(modelGnssData->record().indexOf("time"), Qt::Horizontal, tr("Hora"));
-        modelGnssData->setHeaderData(modelGnssData->record().indexOf("raw_line"), Qt::Horizontal, tr("Línea NMEA"));
-
-        ui->gnssDataTable->setModel(modelGnssData);
-        ui->gnssDataTable->resizeColumnsToContents();
-    }
 }
 
 void MainWindow::initializeUartb()
@@ -118,12 +82,9 @@ void MainWindow::handleNewConnection()
 
         qDebug() << "Comando recibido por TCP:" << command;
 
-        if (command == "CLEAR") {
-            clearGnssTable();
-            clientConnection->write("Tabla limpiada\n");
-        } else if (command == "READ") {
-            getGnssData();
-            clientConnection->write("Lectura iniciada\n");
+        if (command == "REFRESH") {
+            getGNGGAData();
+            clientConnection->write("Refrescando...\n");
         }
 
         clientConnection->flush();
@@ -132,71 +93,98 @@ void MainWindow::handleNewConnection()
     connect(clientConnection, &QTcpSocket::disconnected, clientConnection, &QObject::deleteLater);
 }
 
-void MainWindow::getGnssData()
+void MainWindow::getGNGGAData()
 {
     if (!serialPort->isOpen()) {
         qDebug() << "Puerto serial no está abierto.";
         return;
     }
 
-    linesRead = 0;
-
-    while (serialPort->canReadLine() && linesRead < linesToRead) {
+    while (serialPort->canReadLine()) {
         QByteArray rawData = serialPort->readLine();
         QString line = QString::fromUtf8(rawData).trimmed();
 
-        qDebug() << "Línea recibida:" << line;
-        saveGnssLine(line);
-        sendLineToServer(line);
-        linesRead++;
-    }
+        if (line.startsWith("$GNGGA")) {
+            MainWindow::GNGGAData data = parseGNGGALine(line);
 
-    loadGnssDataToTable();
-}
+            updateUi(data);
+            sendDataToServer(data);
 
-void MainWindow::loadGnssDataToTable()
-{
-    if (modelGnssData) {
-        modelGnssData->select();
+            return;
+        }
     }
 }
 
-void MainWindow::saveGnssLine(const QString& line)
+void MainWindow::updateUi(const GNGGAData& data)
 {
-    QDateTime now = QDateTime::currentDateTime();
-
-    QSqlQuery query;
-    query.prepare("INSERT INTO gnss_data (date, time, raw_line) VALUES (?, ?, ?)");
-    query.addBindValue(now.date().toString("yyyy-MM-dd"));
-    query.addBindValue(now.time().toString("HH:mm:ss"));
-    query.addBindValue(line);
-
-    if (!query.exec())
-        qDebug() << "Error guardando línea NMEA:" << query.lastError().text();
-    else
-        qDebug() << "Línea GNSS guardada:" << line;
+    ui->latitudeInput->setText(QString::number(data.latitude, 'f', 6));
+    ui->longitudeInput->setText(QString::number(data.longitude, 'f', 6));
+    ui->satelitesInput->setText(QString::number(data.satellites, 'f', 6));
+    ui->altitudeInput->setText(QString::number(data.altitude, 'f', 6));
 }
 
-void MainWindow::clearGnssTable()
-{
-    QSqlQuery query;
-    if (!query.exec("DELETE FROM gnss_data")) {
-        qDebug() << "Error al limpiar la tabla:" << query.lastError().text();
-    } else {
-        qDebug() << "Tabla gnss_data limpiada correctamente.";
+double convertNmeaToDecimal(const QString& nmeaCoord, const QString& direction) {
+    if (nmeaCoord.isEmpty() || direction.isEmpty()) return 0.0;
+
+    bool ok = false;
+    double raw = nmeaCoord.toDouble(&ok);
+    if (!ok) return 0.0;
+
+    int degrees = static_cast<int>(raw / 100);
+    double minutes = raw - (degrees * 100);
+
+    double decimal = degrees + minutes / 60.0;
+
+    if (direction == "S" || direction == "W") decimal = -decimal;
+
+    return decimal;
+}
+
+MainWindow::GNGGAData MainWindow::parseGNGGALine(const QString& line) {
+    MainWindow::GNGGAData data;
+
+    QStringList parts = line.split(',');
+
+    if (parts.size() < 15) return data;
+
+    int fixQuality = parts[6].toInt();
+    if (fixQuality == 0) {
+        data.validFix = false;
+        return data;
     }
 
-    loadGnssDataToTable();
+    data.validFix = true;
+
+    data.latitude = convertNmeaToDecimal(parts[2], parts[3]);
+    data.longitude = convertNmeaToDecimal(parts[4], parts[5]);
+
+    data.satellites = parts[7].toInt();
+
+    data.altitude = parts[9].toDouble();
+
+    return data;
 }
 
-void MainWindow::sendLineToServer(const QString& line)
+void MainWindow::sendDataToServer(const GNGGAData& data)
 {
     QUrl url("http://192.168.0.177:1234/api/gnss");
     QNetworkRequest request(url);
 
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    QByteArray payload = QString(R"({"line": "%1"})").arg(line).toUtf8();
+    QString jsonString = QString(
+                             R"({
+            "latitude": "%1",
+            "longitude": "%2",
+            "satelites": "%3",
+            "altitude": "%4"
+        })")
+        .arg(data.latitude)
+        .arg(data.longitude)
+        .arg(data.satellites)
+        .arg(data.altitude);
+
+    QByteArray payload = jsonString.toUtf8();
 
     QNetworkReply* reply = networkManager->post(request, payload);
 
