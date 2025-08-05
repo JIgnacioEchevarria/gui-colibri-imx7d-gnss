@@ -119,7 +119,7 @@ void MainWindow::updateUi(const GNGGAData& data)
 {
     ui->latitudeInput->setText(QString::number(data.latitude, 'f', 6));
     ui->longitudeInput->setText(QString::number(data.longitude, 'f', 6));
-    ui->satellitesInput->setText(QString::number(data.satelllites, 'f', 6));
+    ui->satellitesInput->setText(QString::number(data.satellites, 'f', 6));
     ui->altitudeInput->setText(QString::number(data.altitude, 'f', 6));
 }
 
